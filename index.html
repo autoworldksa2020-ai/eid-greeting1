@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>معايدة العيد</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; margin:0; background:#0b1220; color:#fff; display:flex; justify-content:center;}
+    .wrap{width:min(980px,100%); padding:20px;}
+    .card{background:#121a2b; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:16px;}
+    .row{display:grid; grid-template-columns:1fr; gap:12px;}
+    label{font-size:14px; opacity:.9}
+    input{width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.15); background:#0b1220; color:#fff; font-size:16px;}
+    button{padding:12px 14px; border-radius:12px; border:0; background:#19c5b4; color:#04201d; font-weight:700; font-size:16px; cursor:pointer;}
+    button:active{transform:translateY(1px)}
+    .canvasWrap{display:flex; justify-content:center; padding:12px; background:#0b1220; border-radius:16px; border:1px dashed rgba(255,255,255,.12);}
+    canvas{max-width:100%; height:auto; border-radius:12px;}
+    .hint{font-size:13px; opacity:.75; margin-top:6px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>اكتب اسمك:</label>
+          <input id="nameInput" placeholder="مثال: محمد عبدالله" maxlength="40" />
+          <div class="hint">الاسم يظهر مباشرة على الصورة، ثم اضغط تحميل.</div>
+        </div>
+
+        <div class="canvasWrap">
+          <canvas id="c" width="1080" height="1350"></canvas>
+        </div>
+
+        <button id="downloadBtn">تحميل الصورة</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const nameInput = document.getElementById('nameInput');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const img = new Image();
+    img.src = 'template.jpg'; // إذا صورتك png غيّرها إلى template.png
+
+    function draw() {
+      // خلفية
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // رسم التصميم
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // الاسم (غيّر المكان حسب تصميمك)
+      const name = nameInput.value.trim() || ' ';
+      ctx.font = 'bold 64px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // ظل خفيف عشان يكون مقروء
+      ctx.shadowColor = 'rgba(0,0,0,0.35)';
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 6;
+
+      // لون النص
+      ctx.fillStyle = '#ffffff';
+
+      // مكان الاسم (x,y)
+      const x = canvas.width / 2;
+      const y = 1100; // غيّرها لفوق/تحت حسب تصميمك
+
+      ctx.fillText(name, x, y);
+
+      // إلغاء الظل للأمان
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+    }
+
+    img.onload = () => draw();
+    nameInput.addEventListener('input', draw);
+
+    downloadBtn.addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.download = 'eid-greeting.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    });
+  </script>
+</body>
+</html>
